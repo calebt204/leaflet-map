@@ -21,12 +21,14 @@
   <div id="map"></div>
   <p><a id="redirect-link" href="#">Go to Grafana</a></p>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js" onload="initMap()"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     let marker;
 
+    // initMap function defined separately
     function initMap() {
-      const lat = parseFloat("{{latitude}}") || 37.7749; // Default to San Francisco
+      const lat = parseFloat("{{latitude}}") || 37.7749; // Default to San Francisco if not defined
       const lon = parseFloat("{{longitude}}") || -122.4194;
 
       const map = L.map('map').setView([lat, lon], 12);
@@ -50,6 +52,11 @@
         link.style.display = 'block';
       });
     }
+
+    // Ensure initMap is called after page loads
+    window.onload = function() {
+      initMap(); // This ensures the map is initialized when the page loads
+    };
   </script>
 </body>
 </html>
