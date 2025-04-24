@@ -28,10 +28,14 @@
       .openPopup();
 
     map.on('click', function(e) {
-      const newLat = e.latlng.lat.toFixed(6);
-      const newLon = e.latlng.lng.toFixed(6);
-      console.log("Map clicked! Latitude:", lat, "Longitude:", lon);
-      //window.location.href = window.location.pathname + `?var-latitude=${lat}&var-longitude=${lon}`;
+      const clickedLat = e.latlng.lat.toFixed(6);
+      const clickedLon = e.latlng.lng.toFixed(6);
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('var-latitude', clickedLat);
+      newUrl.searchParams.set('var-longitude', clickedLon);
+      window.location.href = newUrl.toString();
+    });
+
     });
   </script>
 </body>
