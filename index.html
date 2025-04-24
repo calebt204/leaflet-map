@@ -1,60 +1,58 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Leaflet Map</title>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <style>
-      html, body, #map {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-<p>
-  <a id="redirect-link" style="display:none; font-weight: bold;" href="#">Go to Grafana</a>
-</p>
+<head>
+  <title>Leaflet Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  />
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-   <script>
-  let selectedLat = null;
-  let selectedLon = null;
+  <p>
+    <a id="redirect-link" style="display:none; font-weight: bold;" href="#">Go to Grafana</a>
+  </p>
 
-  function initMap() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const lat = parseFloat(urlParams.get('var-latitude')) || 37.7749;
-    const lon = parseFloat(urlParams.get('var-longitude')) || -122.4194;
+  <script
+    src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    onload="initMap()"
+  ></script>
 
-    const map = L.map('map').setView([lat, lon], 12);
+  <script>
+    function initMap() {
+      console.log("Map initialized!");
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+      const urlParams = new URLSearchParams(window.location.search);
+      const lat = parseFloat(urlParams.get("var-latitude") || "37.7749"); // Default: SF
+      const lon = parseFloat(urlParams.get("var-longitude") || "-122.4194");
 
-    const marker = L.marker([lat, lon]).addTo(map)
-      .bindPopup("Selected Point")
-      .openPopup();
+      const map = L.map("map").setView([lat, lon], 12);
 
-    map.on('click', function(e) {
-      selectedLat = e.latlng.lat.toFixed(6);
-      selectedLon = e.latlng.lng.toFixed(6);
-      marker.setLatLng([selectedLat, selectedLon]);
-      marker.getPopup().setContent(`Lat: ${selectedLat}, Lon: ${selectedLon}`);
-      marker.openPopup();
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
 
-      // Show redirect link
-      const redirectLink = document.getElementById("redirect-link");
-      redirectLink.href = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${selectedLat}&var-longitude=${selectedLon}`;
-      redirectLink.style.display = "inline-block";
-    });
-  }
-</script>
+      L.marker([lat, lon]).addTo(map).bindPopup("Selected Point").openPopup();
 
-  </body>
+      map.on("click", function (e) {
+        const clickedLat = e.latlng.lat.toFixed(6);
+        const clickedLon = e.latlng.lng.toFixed(6);
+        const grafanaUrl = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${clickedLat}&var-longitude=${clickedLon}`;
+
+        const link = document.getElementById("redirect-link");
+        link.href = grafanaUrl;
+        link.style.display = "block";
+        link.innerText = `Go to Grafana with selected point (${clickedLat}, ${clickedLon})`;
+      });
+    }
+  </script>
+</body>
 </html>
