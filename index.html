@@ -23,36 +23,38 @@
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-  <script>
-    function initMap() {
-      console.log("Map initialized!");
+<script>
+  let marker;
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const lat = parseFloat(urlParams.get("var-latitude") || "37.7749");
-      const lon = parseFloat(urlParams.get("var-longitude") || "-122.4194");
+  function initMap() {
+    const lat = parseFloat("{{latitude}}");
+    const lon = parseFloat("{{longitude}}");
 
-      const map = L.map("map").setView([lat, lon], 12);
+    const map = L.map('map').setView([lat, lon], 12);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-      L.marker([lat, lon]).addTo(map).bindPopup("Selected Point").openPopup();
+    // Place initial marker
+    marker = L.marker([lat, lon]).addTo(map).bindPopup("Selected Point").openPopup();
 
-      map.on("click", function (e) {
-        const clickedLat = e.latlng.lat.toFixed(6);
-        const clickedLon = e.latlng.lng.toFixed(6);
-        const grafanaUrl = `https://your-grafana-instance/d/your-dashboard?var-latitude=${clickedLat}&var-longitude=${clickedLon}`;
+    map.on('click', function (e) {
+      const newLat = e.latlng.lat.toFixed(6);
+      const newLon = e.latlng.lng.toFixed(6);
 
-        const link = document.getElementById("redirect-link");
-        link.href = grafanaUrl;
-        link.style.display = "block";
-        link.innerText = `Go to Grafana with selected point (${clickedLat}, ${clickedLon})`;
-      });
-    }
+      // Move the existing marker
+      marker.setLatLng([newLat, newLon]).openPopup();
 
-    // ✅ Now that it's defined, we can call it
-    initMap();
-  </script>
+      // Update paragraph or link
+      const link = document.getElementById("redirect-link");
+      const newUrl = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${newLat}&var-longitude=${newLon}`;
+      link.href = newUrl;
+      link.textContent = "Go to Grafana with Selected Location";
+      link.style.display = 'block';
+    });
+  }
+</script>
+
 </body>
 </html>
