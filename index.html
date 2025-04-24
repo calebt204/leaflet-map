@@ -17,35 +17,44 @@
   </head>
   <body>
     <div id="map"></div>
+<p>
+  <a id="redirect-link" style="display:none; font-weight: bold;" href="#">Go to Grafana</a>
+</p>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-      // Wait until Leaflet is loaded
-      window.addEventListener('load', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const lat = parseFloat(urlParams.get("var-latitude")) || 37.7749;
-        const lon = parseFloat(urlParams.get("var-longitude")) || -122.4194;
+   <script>
+  let selectedLat = null;
+  let selectedLon = null;
 
-        const map = L.map("map").setView([lat, lon], 12);
+  function initMap() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const lat = parseFloat(urlParams.get('var-latitude')) || 37.7749;
+    const lon = parseFloat(urlParams.get('var-longitude')) || -122.4194;
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap contributors",
-        }).addTo(map);
+    const map = L.map('map').setView([lat, lon], 12);
 
-        const marker = L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup("Selected Point")
-          .openPopup();
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        map.on("click", function (e) {
-          const newLat = e.latlng.lat.toFixed(6);
-          const newLon = e.latlng.lng.toFixed(6);
-          const newUrl = `${window.location.pathname}?var-latitude=${newLat}&var-longitude=${newLon}`;
-          window.location.href = newUrl;
-        });
+    const marker = L.marker([lat, lon]).addTo(map)
+      .bindPopup("Selected Point")
+      .openPopup();
 
-        console.log("✅ Map initialized at", lat, lon);
-      });
-    </script>
+    map.on('click', function(e) {
+      selectedLat = e.latlng.lat.toFixed(6);
+      selectedLon = e.latlng.lng.toFixed(6);
+      marker.setLatLng([selectedLat, selectedLon]);
+      marker.getPopup().setContent(`Lat: ${selectedLat}, Lon: ${selectedLon}`);
+      marker.openPopup();
+
+      // Show redirect link
+      const redirectLink = document.getElementById("redirect-link");
+      redirectLink.href = `https://your-grafana-url/dashboard-name?var-latitude=${selectedLat}&var-longitude=${selectedLon}`;
+      redirectLink.style.display = "inline-block";
+    });
+  }
+</script>
+
   </body>
 </html>
