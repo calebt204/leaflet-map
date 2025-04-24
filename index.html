@@ -21,17 +21,14 @@
     <a id="redirect-link" style="display:none; font-weight: bold;" href="#">Go to Grafana</a>
   </p>
 
-  <script
-    src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-    onload="initMap()"
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
   <script>
     function initMap() {
       console.log("Map initialized!");
 
       const urlParams = new URLSearchParams(window.location.search);
-      const lat = parseFloat(urlParams.get("var-latitude") || "37.7749"); // Default: SF
+      const lat = parseFloat(urlParams.get("var-latitude") || "37.7749");
       const lon = parseFloat(urlParams.get("var-longitude") || "-122.4194");
 
       const map = L.map("map").setView([lat, lon], 12);
@@ -45,7 +42,7 @@
       map.on("click", function (e) {
         const clickedLat = e.latlng.lat.toFixed(6);
         const clickedLon = e.latlng.lng.toFixed(6);
-        const grafanaUrl = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${clickedLat}&var-longitude=${clickedLon}`;
+        const grafanaUrl = `https://your-grafana-instance/d/your-dashboard?var-latitude=${clickedLat}&var-longitude=${clickedLon}`;
 
         const link = document.getElementById("redirect-link");
         link.href = grafanaUrl;
@@ -53,6 +50,9 @@
         link.innerText = `Go to Grafana with selected point (${clickedLat}, ${clickedLon})`;
       });
     }
+
+    // ✅ Now that it's defined, we can call it
+    initMap();
   </script>
 </body>
 </html>
