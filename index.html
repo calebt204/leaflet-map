@@ -1,60 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Leaflet Map</title>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-  />
+  <title>Leaflet Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     #map {
-      height: 100vh;
+      height: 500px;
+      width: 100%;
+    }
+    #redirect-link {
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
+  <p><a id="redirect-link" href="#">Go to Grafana</a></p>
 
-  <p>
-    <a id="redirect-link" style="display:none; font-weight: bold;" href="#">Go to Grafana</a>
-  </p>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js" onload="initMap()"></script>
+  <script>
+    let marker;
 
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    function initMap() {
+      const lat = parseFloat("{{latitude}}") || 37.7749; // Default to San Francisco
+      const lon = parseFloat("{{longitude}}") || -122.4194;
 
-<script>
-  let marker;
+      const map = L.map('map').setView([lat, lon], 12);
 
-  function initMap() {
-    const lat = parseFloat("{{latitude}}");
-    const lon = parseFloat("{{longitude}}");
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
 
-    const map = L.map('map').setView([lat, lon], 12);
+      marker = L.marker([lat, lon]).addTo(map).bindPopup("Selected Point").openPopup();
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+      map.on('click', function (e) {
+        const newLat = e.latlng.lat.toFixed(6);
+        const newLon = e.latlng.lng.toFixed(6);
 
-    // Place initial marker
-    marker = L.marker([lat, lon]).addTo(map).bindPopup("Selected Point").openPopup();
+        marker.setLatLng([newLat, newLon]).openPopup();
 
-    map.on('click', function (e) {
-      const newLat = e.latlng.lat.toFixed(6);
-      const newLon = e.latlng.lng.toFixed(6);
-
-      // Move the existing marker
-      marker.setLatLng([newLat, newLon]).openPopup();
-
-      // Update paragraph or link
-      const link = document.getElementById("redirect-link");
-      const newUrl = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${newLat}&var-longitude=${newLon}`;
-      link.href = newUrl;
-      link.textContent = "Go to Grafana with Selected Location";
-      link.style.display = 'block';
-    });
-  }
-</script>
-
+        const link = document.getElementById("redirect-link");
+        const newUrl = `http://localhost:3000/d/cejlr3lr2x728c/pressureprostage?var-latitude=${newLat}&var-longitude=${newLon}`;
+        link.href = newUrl;
+        link.textContent = "Go to Grafana with Selected Location";
+        link.style.display = 'block';
+      });
+    }
+  </script>
 </body>
 </html>
